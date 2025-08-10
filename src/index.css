@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Optional: nicer font defaults */
+:root {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+html, body, #root {
+    height: 100%;
+}
+body {
+    font-family: var(--font-sans);
+}
