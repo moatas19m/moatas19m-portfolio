@@ -13,18 +13,18 @@ export default function HeroSection() {
 
                     {/* Text block */}
                     <div className="lg:col-span-6 flex items-center">
-                        <div>
-                            <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-                                Moatasim bin Hisham Sayyid
-                            </h1>
-                            <p className="mt-3 text-xl sm:text-2xl opacity-95">
-                                Full stack software engineer
-                            </p>
+                        {/*<div>*/}
+                        {/*    <h1 className="text-4xl sm:text-5xl font-bold leading-tight">*/}
+                        {/*        Moatasim bin Hisham Sayyid*/}
+                        {/*    </h1>*/}
+                        {/*    <p className="mt-3 text-xl sm:text-2xl opacity-95">*/}
+                        {/*        Full stack software engineer*/}
+                        {/*    </p>*/}
 
-                            <p className="mt-6 text-base sm:text-lg max-w-prose opacity-85">
-                                &lt;introduction&gt;
-                            </p>
-                        </div>
+                        {/*    <p className="mt-6 text-base sm:text-lg max-w-prose opacity-85">*/}
+                        {/*        &lt;introduction&gt;*/}
+                        {/*    </p>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
             </div>

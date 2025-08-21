@@ -1,24 +1,28 @@
 import { Canvas } from '@react-three/fiber';
-import { Environment, ContactShadows, Bounds } from '@react-three/drei';
+import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
 import { Suspense } from 'react';
 import Motorcycle from './Motorcycle.jsx';
 import Rider from './Rider.jsx';
 
-/**
- * Full-screen scene:
- * - Camera is framed for a side view of the motorcycle.
- * - Group is rotated so the motorcycle shows its side to the camera.
- * - Rider is rotated to face the camera.
- */
 export default function HeroScene() {
     return (
         <div className="fixed inset-0 z-0">
             <Canvas
                 shadows
-                camera={{ position: [0, 1.5, 7], fov: 45, near: 0.1, far: 100 }}
+                camera={{ position: [0, 2.2, 4.8], fov: 30, near: 0.5, far: 100 }}
             >
                 <Suspense fallback={null}>
-                    {/* Lighting */}
+                    {/* Debug controls */}
+                    <OrbitControls
+                        target={[0, 1, 0]}
+                        enablePan={false}
+                        enableDamping
+                        dampingFactor={0.1}
+                        minDistance={3}
+                        maxDistance={8}
+                    />
+
+                    {/* Lights */}
                     <hemisphereLight intensity={0.35} />
                     <directionalLight
                         position={[3, 5, 5]}
@@ -27,20 +31,22 @@ export default function HeroScene() {
                         shadow-mapSize={[1024, 1024]}
                     />
 
-                    {/* Subtle reflections/ambient from an HDRI */}
+                    {/* Environment reflections */}
                     <Environment preset="city" />
 
-                    {/* Layout:
-              - Rotate entire display so bike is side-on to camera.
-              - Place rider ~left of bike, then rotate him to face camera.
-           */}
+                    {/* Debug helpers */}
+                    {/*<gridHelper args={[100, 100]} />*/}
+                    {/*<axesHelper args={[5]} />*/}
+
+                    {/* Models */}
                     <group rotation={[0, -Math.PI / 2, 0]}>
                         <Bounds fit clip observe margin={1.1}>
-                            <Motorcycle position={[0, 0, 0]} />
-                            <Rider position={[-1.6, 0, 0]} faceCamera />
+                            <Motorcycle position={[-1.2, 0, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
+                            <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
                         </Bounds>
                     </group>
 
+                    {/* Ground contact shadows */}
                     <ContactShadows
                         opacity={0.45}
                         scale={12}
