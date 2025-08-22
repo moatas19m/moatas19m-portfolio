@@ -1,8 +1,8 @@
 import { Canvas } from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
 import { Suspense } from 'react';
-import Motorcycle from './Motorcycle.jsx';
-import Rider from './Rider.jsx';
+import Motorcycle from './motorcycle/Motorcycle.jsx';
+import Rider from './rider/Rider.jsx';
 
 export default function HeroScene() {
     return (
