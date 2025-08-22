@@ -1,8 +1,9 @@
 import { Canvas } from '@react-three/fiber';
-import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
+import {Environment, ContactShadows, OrbitControls, Bounds, Stars} from '@react-three/drei';
 import { Suspense } from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
+import GalaxyBackground from "./background/GalaxyBackground.jsx";
 
 export default function HeroScene() {
     return (
@@ -26,13 +27,14 @@ export default function HeroScene() {
                     <hemisphereLight intensity={0.35} />
                     <directionalLight
                         position={[3, 5, 5]}
-                        intensity={1.2}
+                        intensity={5.2}
                         castShadow
                         shadow-mapSize={[1024, 1024]}
                     />
 
                     {/* Environment reflections */}
                     <Environment preset="city" />
+                    <Stars radius={100} depth={50} count={8000} factor={2} saturation={1} fade />
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}
@@ -40,7 +42,21 @@ export default function HeroScene() {
 
                     {/* Models */}
                     <group rotation={[0, -Math.PI / 2, 0]}>
-                        <Bounds fit clip observe margin={1.1}>
+                        <Bounds fit observe margin={1.1}>
+                            {/* Background galaxy */}
+                            <GalaxyBackground
+                                count={200000}
+                                size={0.01}
+                                radius={16}
+                                branches={3}
+                                spin={1.1}
+                                randomness={1}
+                                randomnessPower={3}
+                                insideColor="#ffd28a"
+                                outsideColor="#4563ff"
+                                fadeIn={0.6}
+                                rotationSpeed={0.04}
+                            />
                             <Motorcycle position={[-1.2, 0, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
                             <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
                         </Bounds>
