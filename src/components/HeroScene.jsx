@@ -34,7 +34,6 @@ export default function HeroScene() {
 
                     {/* Environment reflections */}
                     <Environment preset="city" />
-                    <Stars radius={100} depth={50} count={8000} factor={2} saturation={1} fade />
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}
@@ -64,7 +63,7 @@ export default function HeroScene() {
 
                     {/* Ground contact shadows */}
                     <ContactShadows
-                        opacity={0.45}
+                        opacity={0.05}
                         scale={12}
                         blur={2.7}
                         far={6}
