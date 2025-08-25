@@ -1,8 +1,7 @@
 import { Canvas } from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds, Stars} from '@react-three/drei';
 import { Suspense } from 'react';
-import Motorcycle from './motorcycle/Motorcycle.jsx';
-import Rider from './rider/Rider.jsx';
+import BikeWithRiderBones from "./BikeWithRiderBones.jsx";
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 
 export default function HeroScene() {
@@ -40,27 +39,29 @@ export default function HeroScene() {
                     {/*<gridHelper args={[100, 100]} />*/}
                     {/*<axesHelper args={[5]} />*/}
 
-                    {/* Models */}
-                    <group rotation={[0, -Math.PI / 2, 0]}>
-                        <Bounds fit observe margin={1.1}>
-                            {/* Background galaxy */}
-                            <GalaxyBackground
-                                count={200000}
-                                size={0.01}
-                                radius={16}
-                                branches={3}
-                                spin={1.1}
-                                randomness={1}
-                                randomnessPower={3}
-                                insideColor="#ffd28a"
-                                outsideColor="#4563ff"
-                                fadeIn={0.6}
-                                rotationSpeed={0.04}
-                            />
-                            <Motorcycle position={[-1.2, 0, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
-                            <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
-                        </Bounds>
-                    </group>
+                    {/* Background galaxy */}
+                    <GalaxyBackground
+                        count={200000}
+                        size={0.01}
+                        radius={16}
+                        branches={3}
+                        spin={1.1}
+                        randomness={1}
+                        randomnessPower={3}
+                        insideColor="#ffd28a"
+                        outsideColor="#4563ff"
+                        fadeIn={0.6}
+                        rotationSpeed={0.04}
+                    />
+
+                    {/* Bike + Rider (bones posing, no clips) */}
+                    <BikeWithRiderBones
+                        mountDelay={0.35}
+                        poseDuration={0.8}
+                        driveDelay={0.95}
+                        driveDuration={3.0}
+                    />
+
 
                     {/* Ground contact shadows */}
                     <ContactShadows
