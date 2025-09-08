@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
-import { Suspense, useEffect, useRef, useCallback } from 'react';
+import {Environment, ContactShadows, OrbitControls, Bounds, Html} from '@react-three/drei';
+import { Suspense, useEffect, useRef, useCallback, useState } from 'react';
 import { Vector3 } from 'three';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
@@ -26,6 +26,17 @@ export default function HeroScene() {
     const bikeRigRef = useRef();
     const tRef = useRef(0);
     const zTargets = useRef([0, -25, -48, -70, -92]);
+    
+    // Debug overlay state
+    const [debugInfo, setDebugInfo] = useState({
+        phase: 'Idle',
+        progress: 0,
+        segment: 0,
+        localU: 0,
+        bikeZ: 0,
+        currentTargetIdx: null,
+        speedBoost: 0
+    });
 
     // Camera controller component
     function CameraController({ bikeRigRef }) {
@@ -174,6 +185,33 @@ export default function HeroScene() {
         // Position Z from progress mapping
         const z = mapProgressToZ(progress);
         rig.position.z = z;
+        
+        // Update debug info
+        const targets = zTargets.current;
+        const segments = targets.length - 1;
+        const segFloat = progress * segments;
+        const segment = Math.max(0, Math.min(segments - 1, Math.floor(segFloat)));
+        const localU = segFloat - segment;
+        
+        setDebugInfo({
+            phase,
+            progress: Math.round(progress * 1000) / 1000,
+            segment,
+            localU: Math.round(localU * 1000) / 1000,
+            bikeZ: Math.round(z * 100) / 100,
+            currentTargetIdx,
+            speedBoost: Math.round(speedBoost * 100) / 100
+        });
+        
+        // Console warnings for bounds checking
+        if (import.meta.env.DEV) {
+            if (progress < 0 || progress > 1) {
+                console.warn(`Progress out of bounds: ${progress}`);
+            }
+            if (segment < 0 || segment >= segments) {
+                console.warn(`Segment out of bounds: ${segment} (max: ${segments - 1})`);
+            }
+        }
 
         // Subtle bobbing on x/y while riding
         if (phase === 'Riding' || phase === 'Starting') {
@@ -218,6 +256,34 @@ export default function HeroScene() {
                     <fog attach="fog" args={["#05060a", 15, 120]} />
                     {/* Camera controller */}
                     <CameraController bikeRigRef={bikeRigRef} />
+                    
+                    {/* Debug overlay */}
+                    {import.meta.env.DEV && (
+                        <Html position={[0, 0, 0]} center>
+                            <div style={{
+                                position: 'fixed',
+                                top: '10px',
+                                left: '10px',
+                                background: 'rgba(0, 0, 0, 0.8)',
+                                color: 'white',
+                                padding: '10px',
+                                borderRadius: '5px',
+                                fontFamily: 'monospace',
+                                fontSize: '12px',
+                                zIndex: 1000,
+                                minWidth: '200px'
+                            }}>
+                                <div><strong>Debug Info</strong></div>
+                                <div>Phase: {debugInfo.phase}</div>
+                                <div>Progress: {debugInfo.progress}</div>
+                                <div>Segment: {debugInfo.segment}</div>
+                                <div>Local U: {debugInfo.localU}</div>
+                                <div>Bike Z: {debugInfo.bikeZ}</div>
+                                <div>Target Idx: {debugInfo.currentTargetIdx ?? 'null'}</div>
+                                <div>Speed Boost: {debugInfo.speedBoost}</div>
+                            </div>
+                        </Html>
+                    )}
                     
                     {/* Debug controls */}
                     <OrbitControls
