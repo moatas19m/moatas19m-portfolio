@@ -1,10 +1,15 @@
 import { useGLTF, useAnimations } from '@react-three/drei';
-import { useEffect } from 'react';
+import {useEffect, useRef} from 'react';
 import { playIdleAnimation } from './animations/idlePoseAnimation.jsx';
+import {BONES} from "../../constants/limbs.js";
+import {useFrame} from "@react-three/fiber";
 
 export default function Rider(props) {
+    const group = useRef();
     const rider = useGLTF('/src/assets/models/rider.glb');
-    const { actions, names } = useAnimations(rider.animations, rider.scene);
+    const {actions, names} = useAnimations(rider.animations, rider.scene);
+
+    const ctrlRef = useRef(null);
 
     // Log all animations once rider is loaded
     //
@@ -40,12 +45,28 @@ export default function Rider(props) {
 
     // single call into animation module
     useEffect(() => {
-        if (!actions || !names?.length) return;
-        const dispose = playIdleAnimation(actions, { fade: 0.5 });
-        return () => dispose?.();
-    }, [actions, names]);
+        if (!actions || !group.current) return;
+        const {dispose, tick} = playIdleAnimation(actions, {
+            delaySec: 2,
+            fade: 0.4,
+            targetObject: group.current,
+            hipsName: 'mixamorigHips',
+            fallToY: 0,
+            floorY: 0,
+            fallScale: 0.55,  // try 0.55; lower = less drop per frame
+        });
+        ctrlRef.current = {tick, dispose};
+        return () => ctrlRef.current?.dispose?.();
+    }, [actions]);
 
-    return <primitive object={rider.scene} {...props} />;
+    useFrame((_, dt) => {
+        ctrlRef.current?.tick?.(dt);
+    });
+
+    return (
+        <group ref={group} {...props}>
+            <primitive object={rider.scene}/>
+        </group>
+    );
 }
-
 useGLTF.preload('/src/assets/models/rider.glb');

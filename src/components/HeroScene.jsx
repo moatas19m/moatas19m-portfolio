@@ -4,24 +4,29 @@ import { Suspense } from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
+import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 
 export default function HeroScene() {
     return (
-        <div className="fixed inset-0 z-0">
+        <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
             <Canvas
                 shadows
-                camera={{ position: [0, 2.2, 4.8], fov: 30, near: 0.5, far: 100 }}
+                camera={{ position: [0, 2.2, 4.8], fov: 60, near: 0.5, far: 100 }}
             >
                 <Suspense fallback={null}>
                     {/* Debug controls */}
                     <OrbitControls
+                        makeDefault={true}
                         target={[0, 1, 0]}
-                        enablePan={false}
+                        enablePan={true}
+                        panSpeed={0.1}
                         enableDamping
                         dampingFactor={0.1}
                         minDistance={3}
                         maxDistance={8}
                     />
+
+                    <SubtleCameraParallax strength={0.2}/>
 
                     {/* Lights */}
                     <hemisphereLight intensity={0.35} />
@@ -56,7 +61,7 @@ export default function HeroScene() {
                                 fadeIn={0.6}
                                 rotationSpeed={0.04}
                             />
-                            <Motorcycle position={[-1.2, 0, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
+                            <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
                             <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
                         </Bounds>
                     </group>
