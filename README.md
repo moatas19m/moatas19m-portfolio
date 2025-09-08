@@ -1,12 +1,33 @@
-# React + Vite
+# Portfolio (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Task Master AI (MCP) setup
 
-Currently, two official plugins are available:
+This project is initialized with Task Master AI as an MCP server for Cursor.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Quick start
 
-## Expanding the ESLint configuration
+1. Copy `.env.example` to `.env` and add at least one API key:
+   - `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` (others are supported too)
+2. In Cursor, use the Task Master MCP integration to manage tasks.
+
+### Project files
+
+- `.taskmaster/` contains configuration, docs, and generated tasks.
+- `.taskmaster/docs/prd.txt` holds the PRD used to generate tasks.
+
+### Common commands
+
+- Manage tasks via Cursor MCP palette or use the CLI if installed:
+  - `task-master list`
+  - `task-master add-task "My task"`
+  - `task-master set-status --id 1 --status done`
+
+---
+
+## Vite
+
+This project uses React + Vite with HMR and ESLint.
+
+### Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
