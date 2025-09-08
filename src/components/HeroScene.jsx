@@ -4,6 +4,8 @@ import { Suspense, useEffect, useRef, useCallback } from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
+import Planets from './Planets.jsx';
+import { logShaderLengths } from '../debug/shaderCheck.js';
 import { useRideStore, selectPhase, selectProgress, selectSpeedBoost, selectCurrentTargetIdx } from '../state/useRideStore.js';
 
 export default function HeroScene() {
@@ -93,6 +95,9 @@ export default function HeroScene() {
         window.addEventListener('wheel', onWheel, { passive: true });
         window.addEventListener('touchstart', onTouchStart, { passive: true });
         window.addEventListener('touchmove', onTouchMove, { passive: true });
+        if (import.meta.env.DEV) {
+            try { logShaderLengths(); } catch (_) {}
+        }
         return () => {
             window.removeEventListener('wheel', onWheel);
             window.removeEventListener('touchstart', onTouchStart);
@@ -141,9 +146,12 @@ export default function HeroScene() {
         <div className="fixed inset-0 z-0">
             <Canvas
                 shadows
-                camera={{ position: [0, 2.2, 4.8], fov: 30, near: 0.5, far: 100 }}
+                camera={{ position: [0, 2.2, 8], fov: 45, near: 0.1, far: 200 }}
             >
                 <Suspense fallback={null}>
+                    {/* Background & fog */}
+                    <color attach="background" args={["#05060a"]} />
+                    <fog attach="fog" args={["#05060a", 15, 120]} />
                     {/* Debug controls */}
                     <OrbitControls
                         target={[0, 1, 0]}
@@ -152,16 +160,12 @@ export default function HeroScene() {
                         dampingFactor={0.1}
                         minDistance={3}
                         maxDistance={8}
+                        enabled={phase === 'Idle' || phase === 'ZoomedOut'}
                     />
 
-                    {/* Lights */}
-                    <hemisphereLight intensity={0.35} />
-                    <directionalLight
-                        position={[3, 5, 5]}
-                        intensity={5.2}
-                        castShadow
-                        shadow-mapSize={[1024, 1024]}
-                    />
+                    {/* Lights (per PRD) */}
+                    <ambientLight intensity={0.35} />
+                    <directionalLight position={[6, 8, 5]} intensity={1.1} castShadow shadow-mapSize={[1024, 1024]} />
 
                     {/* Environment reflections */}
                     <Environment preset="city" />
@@ -187,6 +191,7 @@ export default function HeroScene() {
                                 fadeIn={0.6}
                                 rotationSpeed={0.04}
                             />
+                            <Planets />
                             {/* BikeRig translates forward along -Z based on progress */}
                             <group ref={bikeRigRef} position={[0, 0, 0]}>
                                 <Motorcycle position={[-1.2, 0, 1.2]} rotation={[0, Math.PI / 9, 0]}/>

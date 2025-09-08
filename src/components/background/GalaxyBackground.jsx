@@ -1,4 +1,7 @@
 import { useMemo, useRef, useEffect } from 'react';
+// Placeholder for future custom shader usage
+// import vert from '../../shaders/warpPoints.vert?raw'
+// import frag from '../../shaders/warpPoints.frag?raw'
 import { Color, BufferAttribute, AdditiveBlending, PointsMaterial, BufferGeometry } from 'three';
 import { useFrame } from '@react-three/fiber';
 
