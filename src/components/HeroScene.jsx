@@ -1,12 +1,36 @@
-import { Canvas } from '@react-three/fiber';
+import {Canvas, useThree} from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
-import { Suspense } from 'react';
+import {Suspense, useEffect, useRef} from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
+import PlanetsGroup from "./planets/PlanetsGroup.jsx";
+
+function CameraLogger({ controlsRef }) {
+    const { camera, gl } = useThree(); // safe: inside <Canvas/>
+    useEffect(() => {
+        const onDown = (e) => {
+            if (e.button !== 0) return; // left click only
+            if (!controlsRef.current) return;
+            console.log('📷 Camera position:', camera.position.toArray());
+            console.log('🎯 Camera target:', controlsRef.current.target.toArray());
+        };
+        gl.domElement.addEventListener('pointerdown', onDown);
+        return () => gl.domElement.removeEventListener('pointerdown', onDown);
+    }, [camera, gl, controlsRef]);
+    return null;
+}
 
 export default function HeroScene() {
+
+    const controlsRef = useRef();
+
+    const handlePlanetClick = (name) => {
+        // for now just log; later we can trigger camera fly-to, route change, or open a panel
+        console.log('Planet clicked:', name);
+    };
+
     return (
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
             <Canvas
@@ -16,6 +40,7 @@ export default function HeroScene() {
                 <Suspense fallback={null}>
                     {/* Debug controls */}
                     <OrbitControls
+                        ref={controlsRef}
                         makeDefault={true}
                         target={[0, 1, 0]}
                         enablePan={true}
@@ -26,7 +51,9 @@ export default function HeroScene() {
                         maxDistance={8}
                     />
 
-                    <SubtleCameraParallax strength={0.2}/>
+                    <CameraLogger controlsRef={controlsRef} />
+
+                    {/*<SubtleCameraParallax strength={0.15}/>*/}
 
                     {/* Lights */}
                     <hemisphereLight intensity={0.35} />
@@ -61,6 +88,9 @@ export default function HeroScene() {
                                 fadeIn={0.6}
                                 rotationSpeed={0.04}
                             />
+
+                            <PlanetsGroup onPlanetClick={handlePlanetClick} />
+
                             <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
                             <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
                         </Bounds>
