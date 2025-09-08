@@ -90,7 +90,7 @@ export default function Planets() {
         material={materials.projects}
         onPointerOver={() => setHovered('projects')}
         onPointerOut={() => setHovered(null)}
-        onPointerDown={() => handleClick('projects', 1)}
+        onPointerDown={(e) => { e.stopPropagation(); handleClick('projects', 1) }}
       >
         <primitive object={geoms.sphereSm} attach="geometry" />
       </mesh>
@@ -108,7 +108,7 @@ export default function Planets() {
         material={materials.experience}
         onPointerOver={() => setHovered('experience')}
         onPointerOut={() => setHovered(null)}
-        onPointerDown={() => handleClick('experience', 2)}
+        onPointerDown={(e) => { e.stopPropagation(); handleClick('experience', 2) }}
       >
         <primitive object={geoms.sphereLg} attach="geometry" />
       </mesh>
@@ -119,7 +119,7 @@ export default function Planets() {
         material={materials.skills}
         onPointerOver={() => setHovered('skills')}
         onPointerOut={() => setHovered(null)}
-        onPointerDown={() => handleClick('skills', 3)}
+        onPointerDown={(e) => { e.stopPropagation(); handleClick('skills', 3) }}
       >
         <primitive object={geoms.sphereMd} attach="geometry" />
       </mesh>
@@ -130,7 +130,7 @@ export default function Planets() {
         material={materials.contact}
         onPointerOver={() => setHovered('contact')}
         onPointerOut={() => setHovered(null)}
-        onPointerDown={() => handleClick('contact', 4)}
+        onPointerDown={(e) => { e.stopPropagation(); handleClick('contact', 4) }}
       >
         <primitive object={geoms.sphereXL} attach="geometry" />
       </mesh>
