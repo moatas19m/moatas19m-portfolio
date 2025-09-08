@@ -36,12 +36,16 @@ import { create } from 'zustand'
  * @property {boolean} muted
  * @property {number} speedBoost             // 0..1 multiplier applied temporarily
  * @property {number|null} currentTargetIdx  // segment index retargeting
+ * @property {number} lastRetargetAt         // performance.now() timestamp of last retarget
+ * @property {number} boostToken             // increments per boost to avoid stale timeouts
  * @property {(p: RidePhase) => void} setPhase
  * @property {(id: PlanetId) => void} setActivePlanet
  * @property {(t: number) => void} setProgress
  * @property {(m: boolean) => void} setMuted
  * @property {(b: number) => void} setSpeedBoost
  * @property {(idx: number|null) => void} setCurrentTargetIdx
+ * @property {(t: number) => void} setLastRetargetAt
+ * @property {(n: number) => void} setBoostToken
  */
 
 /** SSR-safe prefers-reduced-motion detection */
@@ -73,6 +77,8 @@ export const useRideStore = create((set) => ({
   muted: true,
   speedBoost: 0,
   currentTargetIdx: null,
+  lastRetargetAt: 0,
+  boostToken: 0,
 
   setPhase: (p) => set({ phase: p }),
   setActivePlanet: (id) => set({ activePlanet: id }),
@@ -80,6 +86,8 @@ export const useRideStore = create((set) => ({
   setMuted: (m) => set({ muted: !!m }),
   setSpeedBoost: (b) => set({ speedBoost: clamp01(b) }),
   setCurrentTargetIdx: (idx) => set({ currentTargetIdx: idx == null ? null : Math.max(0, Math.floor(idx)) }),
+  setLastRetargetAt: (t) => set({ lastRetargetAt: t }),
+  setBoostToken: (n) => set({ boostToken: n }),
 }))
 
 // Convenience selectors (avoid rerenders by selecting the minimal slice)

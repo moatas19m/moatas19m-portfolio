@@ -6,10 +6,15 @@ import { useRideStore } from '../state/useRideStore.js'
 export default function Planets() {
   const rootRef = useRef()
   const [hovered, setHovered] = useState(null)
+  const phase = useRideStore((s) => s.phase)
   const setPhase = useRideStore((s) => s.setPhase)
   const setActivePlanet = useRideStore((s) => s.setActivePlanet)
   const setCurrentTargetIdx = useRideStore((s) => s.setCurrentTargetIdx)
   const setSpeedBoost = useRideStore((s) => s.setSpeedBoost)
+  const lastRetargetAt = useRideStore((s) => s.lastRetargetAt)
+  const setLastRetargetAt = useRideStore((s) => s.setLastRetargetAt)
+  const boostToken = useRideStore((s) => s.boostToken)
+  const setBoostToken = useRideStore((s) => s.setBoostToken)
 
   // Planet materials (memoized)
   const materials = useMemo(() => {
@@ -46,16 +51,36 @@ export default function Planets() {
     }
   })
 
+  const RETARGET_DEBOUNCE_MS = 300
+  // Speed boost is applied as (1 + speedBoost) in input handlers; so 0.6 => 1.6x
+  const BOOST_MULT = 0.6
+  const BOOST_MS = 800
+
   const handleClick = useCallback((id, targetIdx) => {
     setActivePlanet(id)
-    // If idle, this should start the ride; otherwise retarget
-    setPhase('Starting')
-    if (typeof targetIdx === 'number') {
-      setCurrentTargetIdx(targetIdx)
-      setSpeedBoost(0.35) // temporary boost; will be reset on arrival
-      // Optionally decay boost over time elsewhere; for now input step multiplier handles it
+    if (phase === 'Idle') {
+      setPhase('Starting')
+      return
     }
-  }, [setActivePlanet, setPhase, setCurrentTargetIdx, setSpeedBoost])
+    if (phase !== 'Riding') return
+    if (typeof targetIdx !== 'number') return
+
+    const now = performance.now()
+    if (now - lastRetargetAt < RETARGET_DEBOUNCE_MS) return
+
+    setCurrentTargetIdx(targetIdx)
+    setLastRetargetAt(now)
+
+    // Token to ensure only the latest boost timeout wins
+    const newToken = boostToken + 1
+    setBoostToken(newToken)
+    setSpeedBoost(BOOST_MULT)
+    setTimeout(() => {
+      // Only reset if token matches (prevents older timeouts from overriding newer boosts)
+      const { boostToken: latestToken, setSpeedBoost: _setSpeedBoost } = useRideStore.getState()
+      if (latestToken === newToken) _setSpeedBoost(0)
+    }, BOOST_MS)
+  }, [phase, lastRetargetAt, boostToken, setActivePlanet, setPhase, setCurrentTargetIdx, setLastRetargetAt, setBoostToken, setSpeedBoost])
 
   return (
     <group ref={rootRef} name="PlanetsRoot">
