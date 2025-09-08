@@ -1,12 +1,13 @@
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
 import { Suspense, useEffect, useRef, useCallback } from 'react';
+import { Vector3 } from 'three';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import Planets from './Planets.jsx';
 import { logShaderLengths } from '../debug/shaderCheck.js';
-import { useRideStore, selectPhase, selectProgress, selectSpeedBoost, selectCurrentTargetIdx } from '../state/useRideStore.js';
+import { useRideStore, selectPhase, selectProgress, selectSpeedBoost, selectCurrentTargetIdx, selectPrefersReducedMotion } from '../state/useRideStore.js';
 
 export default function HeroScene() {
     const phase = useRideStore(selectPhase);
@@ -17,6 +18,7 @@ export default function HeroScene() {
     const currentTargetIdx = useRideStore(selectCurrentTargetIdx);
     const setSpeedBoost = useRideStore((s) => s.setSpeedBoost);
     const setCurrentTargetIdx = useRideStore((s) => s.setCurrentTargetIdx);
+    const prefersReducedMotion = useRideStore(selectPrefersReducedMotion);
 
     const startedRef = useRef(false);
     const wheelAccumRef = useRef(0);
@@ -24,6 +26,64 @@ export default function HeroScene() {
     const bikeRigRef = useRef();
     const tRef = useRef(0);
     const zTargets = useRef([0, -25, -48, -70, -92]);
+
+    // Camera controller component
+    function CameraController({ bikeRigRef }) {
+        const { camera } = useThree();
+        const isLockedRef = useRef(false);
+        const tmpVec3 = useRef(new Vector3());
+        
+        // Reset lock when leaving ZoomedOut
+        useEffect(() => {
+            if (phase !== 'ZoomedOut') {
+                isLockedRef.current = false;
+            }
+        }, [phase]);
+
+        useFrame((state, delta) => {
+            if (!bikeRigRef.current) return;
+            
+            const bike = bikeRigRef.current;
+            const bikeWorldPos = bike.getWorldPosition(tmpVec3.current);
+            
+            // Follow during Riding/Arriving phases
+            if ((phase === 'Riding' || phase === 'Arriving') && !isLockedRef.current) {
+                const desired = bikeWorldPos.clone().add(new Vector3(0, 1.8, 5.5));
+                const followSpeed = prefersReducedMotion ? 1 : 6; // instant snap if reduced motion
+                const alpha = prefersReducedMotion ? 1 : (1 - Math.exp(-followSpeed * delta));
+                camera.position.lerp(desired, alpha);
+                camera.lookAt(bikeWorldPos.x, 1.4, bikeWorldPos.z - 2);
+            }
+            
+            // ZoomedOut transition
+            if (phase === 'ZoomedOut') {
+                const targetPos = bikeWorldPos.clone().add(new Vector3(0, 6, 14));
+                const zoomSpeed = prefersReducedMotion ? 1 : 4;
+                const alphaZoom = prefersReducedMotion ? 1 : (1 - Math.exp(-zoomSpeed * delta));
+                
+                camera.position.lerp(targetPos, alphaZoom);
+                
+                // Animate FOV to 50
+                const targetFov = 50;
+                const currentFov = camera.fov;
+                const deltaFov = targetFov - currentFov;
+                if (Math.abs(deltaFov) > 0.01) {
+                    camera.fov += deltaFov * alphaZoom;
+                    camera.updateProjectionMatrix();
+                }
+                
+                camera.lookAt(0, 1.4, bikeWorldPos.z - 2);
+                
+                // Lock when settled
+                const distance = camera.position.distanceTo(targetPos);
+                if (distance < 0.05 && Math.abs(deltaFov) < 0.1) {
+                    isLockedRef.current = true;
+                }
+            }
+        });
+
+        return null;
+    }
 
     // cubic ease-in-out for smooth mapping
     const easeInOutCubic = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
@@ -137,6 +197,10 @@ export default function HeroScene() {
                 setPhase('Arriving');
                 setSpeedBoost(0);
                 setCurrentTargetIdx(null);
+                // After a brief arrival, transition to ZoomedOut
+                setTimeout(() => {
+                    setPhase('ZoomedOut');
+                }, 500);
                 break;
             }
         }
@@ -152,14 +216,20 @@ export default function HeroScene() {
                     {/* Background & fog */}
                     <color attach="background" args={["#05060a"]} />
                     <fog attach="fog" args={["#05060a", 15, 120]} />
+                    {/* Camera controller */}
+                    <CameraController bikeRigRef={bikeRigRef} />
+                    
                     {/* Debug controls */}
                     <OrbitControls
                         target={[0, 1, 0]}
                         enablePan={false}
                         enableDamping
-                        dampingFactor={0.1}
-                        minDistance={3}
-                        maxDistance={8}
+                        dampingFactor={0.05}
+                        enableZoom={false}
+                        minPolarAngle={0.9}
+                        maxPolarAngle={1.4}
+                        minAzimuthAngle={-0.6}
+                        maxAzimuthAngle={0.6}
                         enabled={phase === 'Idle' || phase === 'ZoomedOut'}
                     />
 
