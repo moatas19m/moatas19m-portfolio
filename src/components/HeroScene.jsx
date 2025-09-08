@@ -176,73 +176,77 @@ export default function HeroScene() {
         };
     }, [onWheel, onTouchStart, onTouchMove]);
 
-    // Per-frame motion: update BikeRig along -Z with subtle bobbing
-    useFrame((state, delta) => {
-        tRef.current += delta;
-        const rig = bikeRigRef.current;
-        if (!rig) return;
+    // Bike motion controller component (must be inside Canvas)
+    function BikeMotionController({ bikeRigRef }) {
+        useFrame((state, delta) => {
+            tRef.current += delta;
+            const rig = bikeRigRef.current;
+            if (!rig) return;
 
-        // Position Z from progress mapping
-        const z = mapProgressToZ(progress);
-        rig.position.z = z;
-        
-        // Update debug info
-        const targets = zTargets.current;
-        const segments = targets.length - 1;
-        const segFloat = progress * segments;
-        const segment = Math.max(0, Math.min(segments - 1, Math.floor(segFloat)));
-        const localU = segFloat - segment;
-        
-        setDebugInfo({
-            phase,
-            progress: Math.round(progress * 1000) / 1000,
-            segment,
-            localU: Math.round(localU * 1000) / 1000,
-            bikeZ: Math.round(z * 100) / 100,
-            currentTargetIdx,
-            speedBoost: Math.round(speedBoost * 100) / 100
+            // Position Z from progress mapping
+            const z = mapProgressToZ(progress);
+            rig.position.z = z;
+            
+            // Update debug info
+            const targets = zTargets.current;
+            const segments = targets.length - 1;
+            const segFloat = progress * segments;
+            const segment = Math.max(0, Math.min(segments - 1, Math.floor(segFloat)));
+            const localU = segFloat - segment;
+            
+            setDebugInfo({
+                phase,
+                progress: Math.round(progress * 1000) / 1000,
+                segment,
+                localU: Math.round(localU * 1000) / 1000,
+                bikeZ: Math.round(z * 100) / 100,
+                currentTargetIdx,
+                speedBoost: Math.round(speedBoost * 100) / 100
+            });
+            
+            // Console warnings for bounds checking
+            if (import.meta.env.DEV) {
+                if (progress < 0 || progress > 1) {
+                    console.warn(`Progress out of bounds: ${progress}`);
+                }
+                if (segment < 0 || segment >= segments) {
+                    console.warn(`Segment out of bounds: ${segment} (max: ${segments - 1})`);
+                }
+            }
+
+            // Subtle bobbing on x/y while riding
+            if (phase === 'Riding' || phase === 'Starting') {
+                const bob = 0.015;
+                rig.position.x = Math.sin(tRef.current * 1.3) * bob;
+                rig.position.y = Math.sin(tRef.current * 0.9 + 1) * bob * 0.6;
+            } else {
+                rig.position.x = 0;
+                rig.position.y = 0;
+            }
+
+            // Simple phase transitions: Starting → Riding on first movement
+            if (phase === 'Starting' && progress > 0.01) {
+                setPhase('Riding');
+            }
+
+            // Arrival heuristic at any target (including final)
+            const arrivalTargets = zTargets.current;
+            for (let idx = 0; idx < arrivalTargets.length; idx++) {
+                if (Math.abs(z - arrivalTargets[idx]) < 0.25 && (phase === 'Riding' || phase === 'Starting')) {
+                    setPhase('Arriving');
+                    setSpeedBoost(0);
+                    setCurrentTargetIdx(null);
+                    // After a brief arrival, transition to ZoomedOut
+                    setTimeout(() => {
+                        setPhase('ZoomedOut');
+                    }, 500);
+                    break;
+                }
+            }
         });
-        
-        // Console warnings for bounds checking
-        if (import.meta.env.DEV) {
-            if (progress < 0 || progress > 1) {
-                console.warn(`Progress out of bounds: ${progress}`);
-            }
-            if (segment < 0 || segment >= segments) {
-                console.warn(`Segment out of bounds: ${segment} (max: ${segments - 1})`);
-            }
-        }
 
-        // Subtle bobbing on x/y while riding
-        if (phase === 'Riding' || phase === 'Starting') {
-            const bob = 0.015;
-            rig.position.x = Math.sin(tRef.current * 1.3) * bob;
-            rig.position.y = Math.sin(tRef.current * 0.9 + 1) * bob * 0.6;
-        } else {
-            rig.position.x = 0;
-            rig.position.y = 0;
-        }
-
-        // Simple phase transitions: Starting → Riding on first movement
-        if (phase === 'Starting' && progress > 0.01) {
-            setPhase('Riding');
-        }
-
-        // Arrival heuristic at any target (including final)
-        const targets = zTargets.current;
-        for (let idx = 0; idx < targets.length; idx++) {
-            if (Math.abs(z - targets[idx]) < 0.25 && (phase === 'Riding' || phase === 'Starting')) {
-                setPhase('Arriving');
-                setSpeedBoost(0);
-                setCurrentTargetIdx(null);
-                // After a brief arrival, transition to ZoomedOut
-                setTimeout(() => {
-                    setPhase('ZoomedOut');
-                }, 500);
-                break;
-            }
-        }
-    });
+        return null;
+    }
 
     return (
         <div className="fixed inset-0 z-0">
@@ -257,7 +261,10 @@ export default function HeroScene() {
                     {/* Camera controller */}
                     <CameraController bikeRigRef={bikeRigRef} />
                     
-                    {/* Debug overlay */}
+                    {/* Bike motion controller */}
+                    <BikeMotionController bikeRigRef={bikeRigRef} />
+                    
+                    {/* Debug overlay
                     {import.meta.env.DEV && (
                         <Html position={[0, 0, 0]} center>
                             <div style={{
@@ -283,7 +290,7 @@ export default function HeroScene() {
                                 <div>Speed Boost: {debugInfo.speedBoost}</div>
                             </div>
                         </Html>
-                    )}
+                    )} */}
                     
                     {/* Debug controls */}
                     <OrbitControls
