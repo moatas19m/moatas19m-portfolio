@@ -9,7 +9,7 @@ export default function PlanetsGroup({ onPlanetClick }) {
                 type="mars"
                 label="Projects"
                 radius={0.9}
-                position={[ -7,  2.2, -3 ]}
+                position={[ -1,  2.2, -6 ]}
                 rotationSpeed={0.005}
                 axialTilt={0.22}
                 onClick={onPlanetClick}
@@ -19,10 +19,10 @@ export default function PlanetsGroup({ onPlanetClick }) {
                 type="saturn"
                 label="Skills"
                 radius={1.1}
-                position={[  -6.8, 3, 6 ]}
+                position={[  1.5, 3, 5 ]}
                 rotationSpeed={0.006}
-                axialTilt={0.35}
-                ringOpts={{ innerRadius: 1.6, outerRadius: 2.5, color: '#e7dcba', opacity: 0.55 }}
+                axialTilt={0.32}
+                ringOpts={{ innerRadius: 1.6, outerRadius: 2.5, color: '#fffcba', opacity: 0.75 }}
                 onClick={onPlanetClick}
             />
             <Planet
@@ -30,7 +30,7 @@ export default function PlanetsGroup({ onPlanetClick }) {
                 type="ice"
                 label="Work Experience"
                 radius={0.95}
-                position={[  -1.2,  1.3, 7 ]}
+                position={[  -2.3,  -0.9, 8 ]}
                 rotationSpeed={0.004}
                 axialTilt={0.15}
                 onClick={onPlanetClick}

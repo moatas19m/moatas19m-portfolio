@@ -7,20 +7,20 @@ import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import PlanetsGroup from "./planets/PlanetsGroup.jsx";
 
-function CameraLogger({ controlsRef }) {
-    const { camera, gl } = useThree(); // safe: inside <Canvas/>
-    useEffect(() => {
-        const onDown = (e) => {
-            if (e.button !== 0) return; // left click only
-            if (!controlsRef.current) return;
-            console.log('📷 Camera position:', camera.position.toArray());
-            console.log('🎯 Camera target:', controlsRef.current.target.toArray());
-        };
-        gl.domElement.addEventListener('pointerdown', onDown);
-        return () => gl.domElement.removeEventListener('pointerdown', onDown);
-    }, [camera, gl, controlsRef]);
-    return null;
-}
+// function CameraLogger({ controlsRef }) {
+//     const { camera, gl } = useThree(); // safe: inside <Canvas/>
+//     useEffect(() => {
+//         const onDown = (e) => {
+//             if (e.button !== 0) return; // left click only
+//             if (!controlsRef.current) return;
+//             console.log('📷 Camera position:', camera.position.toArray());
+//             console.log('🎯 Camera target:', controlsRef.current.target.toArray());
+//         };
+//         gl.domElement.addEventListener('pointerdown', onDown);
+//         return () => gl.domElement.removeEventListener('pointerdown', onDown);
+//     }, [camera, gl, controlsRef]);
+//     return null;
+// }
 
 export default function HeroScene() {
 
@@ -35,14 +35,14 @@ export default function HeroScene() {
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
             <Canvas
                 shadows
-                camera={{ position: [0, 2.2, 4.8], fov: 60, near: 0.5, far: 100 }}
+                camera={{ position: [0, 3, 10], fov: 65, near: 0.5, far: 100 }}
             >
                 <Suspense fallback={null}>
                     {/* Debug controls */}
                     <OrbitControls
                         ref={controlsRef}
                         makeDefault={true}
-                        target={[0, 1, 0]}
+                        target={[-0.7, 3.6, 0]}
                         enablePan={true}
                         panSpeed={0.1}
                         enableDamping
@@ -51,9 +51,9 @@ export default function HeroScene() {
                         maxDistance={8}
                     />
 
-                    <CameraLogger controlsRef={controlsRef} />
+                    {/*<CameraLogger controlsRef={controlsRef} />*/}
 
-                    {/*<SubtleCameraParallax strength={0.15}/>*/}
+                    <SubtleCameraParallax strength={0.15}/>
 
                     {/* Lights */}
                     <hemisphereLight intensity={0.35} />
@@ -73,7 +73,7 @@ export default function HeroScene() {
 
                     {/* Models */}
                     <group rotation={[0, -Math.PI / 2, 0]}>
-                        <Bounds fit observe margin={1.1}>
+                        <Bounds>
                             {/* Background galaxy */}
                             <GalaxyBackground
                                 count={200000}
@@ -89,7 +89,7 @@ export default function HeroScene() {
                                 rotationSpeed={0.04}
                             />
 
-                            <PlanetsGroup onPlanetClick={handlePlanetClick} />
+                            {/*<PlanetsGroup onPlanetClick={handlePlanetClick} />*/}
 
                             <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
                             <Rider position={[0.7, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1}/>
