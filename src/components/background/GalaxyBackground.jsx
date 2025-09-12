@@ -32,6 +32,7 @@ export default function GalaxyBackground({
                                              fadeIn = 0.8,
                                              rotationSpeed = 0.08, // radians/sec
                                              position = [0, 0, 0],
+                                             warp = 0,
                                              ...props
                                          }) {
     const pointsRef = useRef();
@@ -103,6 +104,9 @@ export default function GalaxyBackground({
         if (fadeIn > 0 && material.size < size) {
             material.size = Math.min(size, material.size + (size / fadeIn) * dt);
         }
+        // Cross-fade out as warp increases (quadratic curve feels nicer)
+        const vis = 1 - Math.min(1, warp * warp);
+        material.opacity = Math.min(1, vis); // Can change 1.1
     });
 
     // Auto-rotate the whole galaxy

@@ -1,10 +1,12 @@
 import {Canvas} from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
-import {Suspense, useRef} from 'react';
+import {Suspense, useRef, useState} from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
+import WarpTunnel from "./background/animations/WarpTunnel.jsx";
+import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
 
 // function CameraLogger({ controlsRef }) {
 //     const { camera, gl } = useThree(); // safe: inside <Canvas/>
@@ -24,6 +26,8 @@ import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 export default function HeroScene() {
 
     const controlsRef = useRef();
+    const motorcycleRef = useRef();
+    const [warpSpeed, setWarpSpeed] = useState(0);
 
     return (
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
@@ -38,6 +42,8 @@ export default function HeroScene() {
                         makeDefault={true}
                         target={[-0.7, 3.6, 0]}
                         enablePan={false}
+                        enableRotate={false}
+                        enableZoom={false}   // <- important so wheel doesn’t zoom the camera
                         enableDamping
                         dampingFactor={0.1}
                         minDistance={3}
@@ -45,8 +51,6 @@ export default function HeroScene() {
                     />
 
                     {/*<CameraLogger controlsRef={controlsRef} />*/}
-
-                    <SubtleCameraParallax strength={0.15} lockTarget={true}/>
 
                     {/* Lights */}
                     <hemisphereLight intensity={0.35} />
@@ -65,7 +69,7 @@ export default function HeroScene() {
                     {/*<axesHelper args={[5]} />*/}
 
                     {/* Models */}
-                    <group rotation={[0, -Math.PI / 2, 0]}>
+                    <group>
                         <Bounds>
                             {/* Background galaxy */}
                             <GalaxyBackground
@@ -80,12 +84,33 @@ export default function HeroScene() {
                                 outsideColor="#4563ff"
                                 fadeIn={0.6}
                                 rotationSpeed={0.04}
+                                warp={warpSpeed}
                             />
 
-                            <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
-                            <Rider position={[-0.5, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
+                            <WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />
+
+                            <group ref={motorcycleRef}>
+                                <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
+                                <Rider position={[-0.5, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
+                            </group>
                         </Bounds>
                     </group>
+
+                    {/* Scroll-driven motion + camera follow; emits warpSpeed 0..1 */}
+                    <ScrollAnimation
+                    motorcycleRef={motorcycleRef}
+                    followDistance={7}
+                    followHeight={2.2}
+                    maxSpeed={4}
+                    onSpeedChange={setWarpSpeed}
+                    />
+
+                    <SubtleCameraParallax
+                        strength={0.12}            // try 0.08 – 0.18
+                        maxScreenDeflection={0.1}
+                        rebase={10}
+                        damping={10}
+                    />
 
                     {/* Ground contact shadows */}
                     <ContactShadows
