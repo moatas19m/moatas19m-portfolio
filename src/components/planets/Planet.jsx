@@ -3,6 +3,7 @@ import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { MeshStandardMaterial, MeshPhysicalMaterial, Color, AdditiveBlending } from 'three';
 import { Html } from '@react-three/drei';
+import CraterMarsMaterial from "./materials/CraterMarsMaterial.jsx";
 
 /**
  * Planet
@@ -41,7 +42,7 @@ export default function Planet({
                 metalness: 0.05,
                 clearcoat: 0.0,
                 transmission: 0.0,
-                envIntensity: 0.5,
+                envIntensity: 10,
                 materialClass: MeshStandardMaterial,
             };
 
@@ -119,8 +120,24 @@ export default function Planet({
                 castShadow
                 receiveShadow
             >
-                <sphereGeometry args={[radius, 64, 64]} />
-                <primitive object={material} ref={matRef} attach="material" />
+                {/* (optional) bump segments to 96 for cleaner rims */}
+                <sphereGeometry args={[radius, 96, 96]} />
+
+                {/* Use crater shader only for Mars, otherwise keep your existing material */}
+                {type === 'mars' ? (
+                    <CraterMarsMaterial
+                        baseColor={'#c1440e'}
+                        craterCount={72}
+                        craterMin={0.055}
+                        craterMax={0.13}
+                        craterDepth={0.04}
+                        rimHeight={0.018}
+                        roughBoost={1.28}
+                        seed={2.0}
+                    />
+                ) : (
+                    <primitive object={material} ref={matRef} attach="material" />
+                )}
             </mesh>
 
             {/* optional rings (Saturn-like) */}

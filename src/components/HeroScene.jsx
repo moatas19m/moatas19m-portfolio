@@ -1,12 +1,13 @@
 import {Canvas} from '@react-three/fiber';
 import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
-import {Suspense, useRef, useState} from 'react';
+import {Suspense, useRef} from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
+import PlanetsGroup from "./planets/PlanetsGroup.jsx";
 
 // function CameraLogger({ controlsRef }) {
 //     const { camera, gl } = useThree(); // safe: inside <Canvas/>
@@ -27,13 +28,18 @@ export default function HeroScene() {
 
     const controlsRef = useRef();
     const motorcycleRef = useRef();
-    const [warpSpeed, setWarpSpeed] = useState(0);
+    // const [warpSpeed, setWarpSpeed] = useState(0);
+
+    const handlePlanetClick = (name) => {
+        // for now just log; later we can trigger camera fly-to, route change, or open a panel
+        console.log('Planet clicked:', name);
+    };
 
     return (
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
             <Canvas
                 shadows
-                camera={{ position: [0, 3, 10], fov: 55, near: 0.5, far: 100 }}
+                camera={{ position: [0, 3, 10], fov: 60, near: 0.5, far: 100 }}
             >
                 <Suspense fallback={null}>
                     {/* Debug controls */}
@@ -42,8 +48,8 @@ export default function HeroScene() {
                         makeDefault={true}
                         target={[-0.7, 3.6, 0]}
                         enablePan={false}
-                        enableRotate={false}
-                        enableZoom={false}   // <- important so wheel doesn’t zoom the camera
+                        // enableRotate={false}
+                        // enableZoom={false}   // <- important so wheel doesn’t zoom the camera
                         enableDamping
                         dampingFactor={0.1}
                         minDistance={3}
@@ -69,8 +75,8 @@ export default function HeroScene() {
                     {/*<axesHelper args={[5]} />*/}
 
                     {/* Models */}
-                    <group>
-                        <Bounds>
+                    <group rotation={[0, -Math.PI / 2, 0]}>
+                        <Bounds fit>
                             {/* Background galaxy */}
                             <GalaxyBackground
                                 count={200000}
@@ -84,10 +90,12 @@ export default function HeroScene() {
                                 outsideColor="#4563ff"
                                 fadeIn={0.6}
                                 rotationSpeed={0.04}
-                                warp={warpSpeed}
+                                // warp={warpSpeed}
                             />
 
-                            <WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />
+                            {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
+
+                            <PlanetsGroup onPlanetClick={handlePlanetClick} />
 
                             <group ref={motorcycleRef}>
                                 <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
@@ -96,14 +104,14 @@ export default function HeroScene() {
                         </Bounds>
                     </group>
 
-                    {/* Scroll-driven motion + camera follow; emits warpSpeed 0..1 */}
-                    <ScrollAnimation
-                    motorcycleRef={motorcycleRef}
-                    followDistance={7}
-                    followHeight={2.2}
-                    maxSpeed={4}
-                    onSpeedChange={setWarpSpeed}
-                    />
+                    {/*/!* Scroll-driven motion + camera follow; emits warpSpeed 0..1 *!/*/}
+                    {/*<ScrollAnimation*/}
+                    {/*motorcycleRef={motorcycleRef}*/}
+                    {/*followDistance={7}*/}
+                    {/*followHeight={2.2}*/}
+                    {/*maxSpeed={4}*/}
+                    {/*onSpeedChange={setWarpSpeed}*/}
+                    {/*/>*/}
 
                     <SubtleCameraParallax
                         strength={0.12}            // try 0.08 – 0.18

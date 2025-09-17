@@ -3,25 +3,23 @@ import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 /**
- * SubtleCameraParallax (target nudge only)
- *
+ * Subtle mouse parallax (target stays fixed):
  * - Requires <OrbitControls makeDefault />
- * - DOES NOT move the camera.
- * - Reads current OrbitControls.target (set by ScrollAnimation) and gently nudges it
- *   based on mouse position, then rebases toward that moving target each frame.
- *
- * Mount this component AFTER <ScrollAnimation /> so it runs later in the frame.
+ * - Only camera moves; target remains baseTarget
+ * - Movement is angularly clamped so content never drifts off-screen
  */
 export default function SubtleCameraParallax({
-                                                 strength = 0.12,                 // overall nudge amount (multiplier)
-                                                 maxScreenDeflection = 1.0,        // clamp normalized mouse in [-1..1] per axis, scaled by this
-                                                 rebase = 10,                      // how quickly baseTarget follows the live controls.target
-                                                 damping = 10,                     // how quickly the nudge lerps onto controls.target
+                                                 strength = 1,          // global multiplier for sensitivity
+                                                 maxYaw = THREE.MathUtils.degToRad(9),   // horizontal cap (≈ 9°)
+                                                 maxPitch = THREE.MathUtils.degToRad(6), // vertical cap (≈ 6°)
+                                                 damping = 6,           // camera damping
+                                                 lockTarget = true      // keep controls.target fixed to baseTarget
                                              }) {
     const { camera, gl } = useThree();
     const controls = useThree((s) => s.controls);
 
-    const baseTarget = useRef(new THREE.Vector3());  // where we orbit around (follows live target)
+    const baseTarget = useRef(new THREE.Vector3(0, 1, 0));
+    const baseOffsetDir = useRef(new THREE.Vector3()); // unit direction from target to camera
     const initialized = useRef(false);
 
     // Normalized pointer in [-1, 1]
@@ -34,49 +32,54 @@ export default function SubtleCameraParallax({
 
         const onMove = (e) => {
             const r = el.getBoundingClientRect();
-            // normalized in [-1,1]
-            const x = ((e.clientX - r.left) / r.width) * 2 - 1;
-            const y = -(((e.clientY - r.top) / r.height) * 2 - 1);
-            // clamp and allow optional extra deflection range
-            nx.current = THREE.MathUtils.clamp(x * maxScreenDeflection, -1, 1);
-            ny.current = THREE.MathUtils.clamp(y * maxScreenDeflection, -1, 1);
+            // clamp to [-1, 1] so it "stops" at borders
+            nx.current = Math.min(1, Math.max(-1, ((e.clientX - r.left) / r.width) * 2 - 1));
+            ny.current = Math.min(1, Math.max(-1, -(((e.clientY - r.top) / r.height) * 2 - 1)));
         };
 
         el.addEventListener('pointermove', onMove, { passive: true });
         return () => el.removeEventListener('pointermove', onMove);
-    }, [gl, maxScreenDeflection]);
+    }, [gl]);
 
+    // Initialize once controls exist
     useEffect(() => {
         if (!controls || initialized.current) return;
-        // Start from whatever ScrollAnimation last set
         baseTarget.current.copy(controls.target);
+        // initial direction from target to camera
+        baseOffsetDir.current.copy(camera.position).sub(controls.target).normalize();
         initialized.current = true;
-    }, [controls]);
+    }, [controls, camera]);
 
-    useFrame((_, dt) => {
+    useFrame((_, delta) => {
         if (!initialized.current || !controls) return;
 
-        // 1) Rebase: follow the live target set by ScrollAnimation (no hard lock)
-        baseTarget.current.lerp(controls.target, 1 - Math.exp(-rebase * dt));
+        // Keep the target hard-locked if requested (prevents any drift)
+        if (lockTarget) controls.target.copy(baseTarget.current);
 
-        // 2) Build a small offset in screen space (camera-right & camera-up)
-        //    Scale by distance to keep effect consistent as user zooms.
+        // Current distance (respects user zoom/dolly)
         const dist = camera.position.distanceTo(baseTarget.current);
-        const offsetUnits = dist * strength;
 
-        // camera basis vectors
-        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion).normalize();
-        const up    = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion).normalize();
+        // Convert mouse to small yaw/pitch deltas, clamped
+        const yaw = (nx.current * maxYaw) * strength;     // left/right
+        const pitch = (ny.current * maxPitch) * strength; // up/down
 
-        const offset = new THREE.Vector3()
-            .addScaledVector(right, nx.current * offsetUnits)
-            .addScaledVector(up,    ny.current * offsetUnits);
+        // Build a rotation around the base direction
+        // Start from the original base direction each frame so it never accumulates
+        const desiredDir = new THREE.Vector3().copy(baseOffsetDir.current);
+        const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+        desiredDir.applyQuaternion(q).normalize();
 
-        // 3) Target to aim for = re-based target + tiny mouse offset
-        const nudged = new THREE.Vector3().copy(baseTarget.current).add(offset);
+        // Desired camera position = target + rotated direction * current distance
+        const desiredPos = new THREE.Vector3()
+            .copy(baseTarget.current)
+            .addScaledVector(desiredDir, dist);
 
-        // 4) Apply only to controls.target (OrbitControls remains the sole camera boss)
-        controls.target.lerp(nudged, 1 - Math.exp(-damping * dt));
+        // Damp camera towards desired position
+        camera.position.x = THREE.MathUtils.damp(camera.position.x, desiredPos.x, damping, delta);
+        camera.position.y = THREE.MathUtils.damp(camera.position.y, desiredPos.y, damping, delta);
+        camera.position.z = THREE.MathUtils.damp(camera.position.z, desiredPos.z, damping, delta);
+
+        // Ensure the camera keeps looking at the (fixed) target
         controls.update();
     });
 

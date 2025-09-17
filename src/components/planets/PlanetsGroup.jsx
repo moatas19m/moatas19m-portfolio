@@ -18,11 +18,11 @@ export default function PlanetsGroup({ onPlanetClick }) {
                 name="Skills"
                 type="saturn"
                 label="Skills"
-                radius={1.1}
+                radius={1}
                 position={[  1.5, 3, 5 ]}
                 rotationSpeed={0.006}
                 axialTilt={0.32}
-                ringOpts={{ innerRadius: 1.6, outerRadius: 2.5, color: '#fffcba', opacity: 0.75 }}
+                ringOpts={{ innerRadius: 1.6, outerRadius: 2.2, color: '#fffcba', opacity: 0.75 }}
                 onClick={onPlanetClick}
             />
             <Planet
