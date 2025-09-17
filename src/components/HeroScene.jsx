@@ -8,6 +8,8 @@ import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
 
+// TODO: Continue working on animations and warp effect in this branch
+
 // function CameraLogger({ controlsRef }) {
 //     const { camera, gl } = useThree(); // safe: inside <Canvas/>
 //     useEffect(() => {
