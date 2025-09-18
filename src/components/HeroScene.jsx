@@ -5,9 +5,11 @@ import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
-import WarpTunnel from "./background/animations/WarpTunnel.jsx";
-import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
-import PlanetsGroup from "./planets/PlanetsGroup.jsx";
+import Mars from '@app/components/planets/Mars'
+
+// import WarpTunnel from "./background/animations/WarpTunnel.jsx";
+// import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
+// import PlanetsGroup from "./planets/PlanetsGroup.jsx";
 
 // function CameraLogger({ controlsRef }) {
 //     const { camera, gl } = useThree(); // safe: inside <Canvas/>
@@ -30,10 +32,10 @@ export default function HeroScene() {
     const motorcycleRef = useRef();
     // const [warpSpeed, setWarpSpeed] = useState(0);
 
-    const handlePlanetClick = (name) => {
-        // for now just log; later we can trigger camera fly-to, route change, or open a panel
-        console.log('Planet clicked:', name);
-    };
+    // const handlePlanetClick = (name) => {
+    //     // for now just log; later we can trigger camera fly-to, route change, or open a panel
+    //     console.log('Planet clicked:', name);
+    // };
 
     return (
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
@@ -95,7 +97,8 @@ export default function HeroScene() {
 
                             {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
-                            <PlanetsGroup onPlanetClick={handlePlanetClick} />
+                            {/*<PlanetsGroup onPlanetClick={handlePlanetClick} />*/}
+                            <Mars position={[ -1,  2.2, -6 ]} rotation={[0, Math.PI/7, 0]} />
 
                             <group ref={motorcycleRef}>
                                 <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
