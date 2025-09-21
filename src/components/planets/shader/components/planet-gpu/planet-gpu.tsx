@@ -50,38 +50,38 @@ const PlanetGPU = forwardRef(({ showcase }: { showcase: boolean }, ref) => {
   const MGroup = motion.group as unknown as React.ComponentType<any>;
   const MMesh  = motion.mesh  as unknown as React.ComponentType<any>;
 
-  const onCanvasMove = (e: PointerEvent) => {
-    if (e.buttons === 1) {
-      rotationY.set(rotationY.get() + e.movementX * GRAB_SPEED);
-
-      if (rotationX.get() > 0.75) rotationX.set(0.75);
-      else if (rotationX.get() < -0.75) rotationX.set(-0.75);
-      else rotationX.set(rotationX.get() + e.movementY * GRAB_SPEED);
-    }
-  };
-
-  const onCanvasUp = () => {
-    if (rotationX.get() > 0.5) rotationX.set(0.5);
-    else if (rotationX.get() < -0.5) rotationX.set(-0.5);
-  };
-
-  useEffect(() => {
-    if (showcase) rotationX.set(0.25);
-  }, [showcase]);
-
-  useEffect(() => {
-    const canvas = three.gl.domElement;
-
-    canvas.addEventListener("pointermove", onCanvasMove);
-    canvas.addEventListener("pointerup", onCanvasUp);
-    canvas.addEventListener("pointerout", onCanvasUp);
-
-    return () => {
-      canvas.removeEventListener("pointermove", onCanvasMove);
-      canvas.removeEventListener("pointerup", onCanvasUp);
-      canvas.removeEventListener("pointerout", onCanvasUp);
-    };
-  }, []);
+  // const onCanvasMove = (e: PointerEvent) => {
+  //   if (e.buttons === 1) {
+  //     rotationY.set(rotationY.get() + e.movementX * GRAB_SPEED);
+  //
+  //     if (rotationX.get() > 0.75) rotationX.set(0.75);
+  //     else if (rotationX.get() < -0.75) rotationX.set(-0.75);
+  //     else rotationX.set(rotationX.get() + e.movementY * GRAB_SPEED);
+  //   }
+  // };
+  //
+  // const onCanvasUp = () => {
+  //   if (rotationX.get() > 0.5) rotationX.set(0.5);
+  //   else if (rotationX.get() < -0.5) rotationX.set(-0.5);
+  // };
+  //
+  // useEffect(() => {
+  //   if (showcase) rotationX.set(0.25);
+  // }, [showcase]);
+  //
+  // useEffect(() => {
+  //   const canvas = three.gl.domElement;
+  //
+  //   canvas.addEventListener("pointermove", onCanvasMove);
+  //   canvas.addEventListener("pointerup", onCanvasUp);
+  //   canvas.addEventListener("pointerout", onCanvasUp);
+  //
+  //   return () => {
+  //     canvas.removeEventListener("pointermove", onCanvasMove);
+  //     canvas.removeEventListener("pointerup", onCanvasUp);
+  //     canvas.removeEventListener("pointerout", onCanvasUp);
+  //   };
+  // }, []);
 
   return (
     <MGroup rotation-x={springRotationX} rotation-y={springRotationY}>

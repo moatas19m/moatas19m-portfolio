@@ -6,6 +6,7 @@ import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import Mars from '@app/components/planets/Mars'
+import * as THREE from "three";
 
 // import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 // import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
@@ -41,7 +42,7 @@ export default function HeroScene() {
         <div className="fixed inset-0 z-50" style={{ pointerEvents: 'auto' }}>
             <Canvas
                 shadows
-                camera={{ position: [0, 3, 10], fov: 60, near: 0.5, far: 100 }}
+                camera={{ position: new THREE.Vector3(10, 1, 0), fov: 60, near: 0.5, far: 100 }}
             >
                 <Suspense fallback={null}>
                     {/* Debug controls */}
@@ -50,8 +51,9 @@ export default function HeroScene() {
                         makeDefault={true}
                         target={[-0.7, 3.6, 0]}
                         enablePan={false}
-                        // enableRotate={false}
-                        // enableZoom={false}   // <- important so wheel doesn’t zoom the camera
+                        autoRotate={false}
+                        enableRotate={false}
+                        enableZoom={false}   // <- important so wheel doesn’t zoom the camera
                         enableDamping
                         dampingFactor={0.1}
                         minDistance={3}
@@ -70,15 +72,13 @@ export default function HeroScene() {
                     />
 
                     {/* Environment reflections */}
-                    <Environment preset="city" />
+                    <Environment preset="dawn" />
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}
                     {/*<axesHelper args={[5]} />*/}
 
                     {/* Models */}
-                    <group rotation={[0, -Math.PI / 2, 0]}>
-                        <Bounds fit>
                             {/* Background galaxy */}
                             <GalaxyBackground
                                 count={200000}
@@ -98,14 +98,12 @@ export default function HeroScene() {
                             {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
                             {/*<PlanetsGroup onPlanetClick={handlePlanetClick} />*/}
-                            <Mars position={[ -1,  2.2, -6 ]} rotation={[0, Math.PI/7, 0]} />
+                            <Mars position={[ -1,  2.2, -6 ]}/>
 
                             <group ref={motorcycleRef}>
-                                <Motorcycle position={[-1.2, 0.8, 1.2]} rotation={[0, Math.PI / 9, 0]}/>
-                                <Rider position={[-0.5, 0, -0.8]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
+                                <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>
+                                <Rider position={[-0.5, 0, -1.6]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
                             </group>
-                        </Bounds>
-                    </group>
 
                     {/*/!* Scroll-driven motion + camera follow; emits warpSpeed 0..1 *!/*/}
                     {/*<ScrollAnimation*/}
@@ -117,8 +115,8 @@ export default function HeroScene() {
                     {/*/>*/}
 
                     <SubtleCameraParallax
-                        strength={0.12}            // try 0.08 – 0.18
-                        maxScreenDeflection={0.1}
+                        strength={0.32}            // try 0.08 – 0.18
+                        maxScreenDeflection={0.4}
                         rebase={10}
                         damping={10}
                     />
