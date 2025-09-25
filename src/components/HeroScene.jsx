@@ -66,13 +66,13 @@ export default function HeroScene() {
                     <hemisphereLight intensity={0.35} />
                     <directionalLight
                         position={[3, 5, 5]}
-                        intensity={5.2}
+                        intensity={1.2}
                         castShadow
                         shadow-mapSize={[1024, 1024]}
                     />
 
                     {/* Environment reflections */}
-                    <Environment preset="dawn" />
+                    {/*<Environment preset="sunset" />*/}
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}

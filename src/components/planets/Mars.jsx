@@ -1,4 +1,4 @@
-import { Provider } from 'jotai'
+import {createStore, Provider} from 'jotai'
 import {Vector3, Vector4} from 'three'
 
 import PlanetGPU from '@shader/components/planet-gpu/planet-gpu'
@@ -33,11 +33,10 @@ export default function Mars(props) {
 
                 // ELEVATION color gradient (icy teal → soft white highlight → cyan)
                 [elevationGradientAtom, [
-                    new GradientStop({ anchor: 0.00, color: new Vector4(0.05, 0.35, 0.38, 1) }), // deep teal
-                    new GradientStop({ anchor: 0.12, color: new Vector4(0.00, 0.88, 0.85, 1) }), // bright aqua
-                    new GradientStop({ anchor: 0.35, color: new Vector4(0.00, 0.78, 0.80, 1) }), // cyan
+                    new GradientStop({ anchor: 0.00, color: new Vector4(0.0235, 0.4353, 0.3882, 1) }), // deep teal
+                    new GradientStop({ anchor: 0.12, color: new Vector4(0.1137, 0.6039, 0.5647, 1) }), // bright aqua
+                    new GradientStop({ anchor: 0.35, color: new Vector4(0.3490, 0.9098, 0.8745, 1) }), // cyan
                     new GradientStop({ anchor: 0.82, color: new Vector4(1.00, 1.00, 1.00, 1) }), // icy highlight
-                    new GradientStop({ anchor: 1.00, color: new Vector4(0.70, 1.00, 1.00, 1) })  // pale cyan
                 ]],
 
                 // DEPTH color gradient (dark teal → cyan)
@@ -89,10 +88,19 @@ export default function Mars(props) {
         []
     )
 
+    console.log(initialValues)
+
+    const marsStore = useMemo(() => {
+        const s = createStore()
+        initialValues.forEach((val, atom) => s.set(atom, val))
+        return s
+    }, [initialValues])
+
+
     return (
         <group {...props}>
-            <Provider initialValues={initialValues}>
-                <PlanetGPU showcase={false} />
+            <Provider store={marsStore}>
+                <PlanetGPU showcase={false}/>
                 {/* Add glow if your scene is a bit dark: */}
                 {/* <Atmosphere /> */}
             </Provider>
