@@ -7,7 +7,7 @@ import {
   DoubleSide,
   FrontSide,
   Mesh,
-  MeshPhysicalMaterial,
+  MeshStandardMaterial,
   PlaneGeometry,
   Scene,
   ShaderMaterial,
@@ -230,7 +230,7 @@ const TerrainFace = ({
           ref={shaderRef as any}
           vertexShader={planetVertex}
           fragmentShader={planetFragment}
-          baseMaterial={MeshPhysicalMaterial}
+          baseMaterial={MeshStandardMaterial}
           {...{ wireframe }}
           side={renderBackface ? DoubleSide : FrontSide}
         />

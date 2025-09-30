@@ -19,40 +19,37 @@ import { SimpleNoiseFilter, RidgidNoiseFilter } from '@shader/lib/noise'
 import { useMemo } from 'react'
 
 
-export default function Mars(props) {
+export default function Hoth(props) {
     const initialValues = useMemo(
         () =>
             new Map([
                 // geometry / toggles
                 [meshResolutionAtom, 144],
-                [planetRadiusAtom,   1.6],
+                [planetRadiusAtom,   1.5],
                 [isWireframeAtom,    false],
                 [rendersGlobeAtom,   true],
                 [isBlendAtom,        true],
 
                 // ELEVATION color gradient (icy teal → soft white highlight → cyan)
                 [elevationGradientAtom, [
-                        new GradientStop({ anchor: 0.05,   color: new Vector4(0.2706, 0.0000, 0.1922, 1) }), // rgb(69, 0, 49)
-                        new GradientStop({ anchor: 0.1634, color: new Vector4(0.1882, 0.0588, 0.2824, 1) }), // rgb(48, 15, 72)
-                        new GradientStop({ anchor: 0.3210, color: new Vector4(0.3059, 0.0000, 0.4118, 1) }), // rgb(78, 0, 105)
-                        new GradientStop({ anchor: 0.563,  color: new Vector4(0.3765, 0.0000, 0.2510, 1) }), // rgb(96, 0, 64)
-                        new GradientStop({ anchor: 0.86,   color: new Vector4(1.0000, 0.6863, 0.7686, 1) }), // rgb(255, 175, 196)
-                        new GradientStop({ anchor: 0.95,   color: new Vector4(1.0000, 1.0000, 1.0000, 1) })  // rgb(255, 255, 255)
-                    ]],
+                    new GradientStop({ anchor: 0.00, color: new Vector4(0.0235, 0.4353, 0.3882, 1) }), // deep teal
+                    new GradientStop({ anchor: 0.12, color: new Vector4(0.1137, 0.6039, 0.5647, 1) }), // bright aqua
+                    new GradientStop({ anchor: 0.35, color: new Vector4(0.3490, 0.9098, 0.8745, 1) }), // cyan
+                    new GradientStop({ anchor: 0.90, color: new Vector4(0.91, 0.91, 0.91, 1) }), // icy highlight
+                ]],
 
                 // DEPTH color gradient (dark teal → cyan)
                 [depthGradientAtom, [
-                    new GradientStop({ anchor: 0.05,      color: new Vector4(0.4863, 0.0000, 0.3255, 1) }), // rgb(124, 0, 83)
-                    new GradientStop({ anchor: 0.511364,  color: new Vector4(0.4863, 0.0000, 0.3098, 1) }), // rgb(124, 0, 79)
-                    new GradientStop({ anchor: 0.95,      color: new Vector4(1.0000, 0.1176, 0.6588, 1) })  // rgb(255, 30, 168)
+                    new GradientStop({ anchor: 0.00, color: new Vector4(0.0000, 0.3294, 0.2980, 1) }),
+                    new GradientStop({ anchor: 1.00, color: new Vector4(0.1451, 0.8706, 0.8471, 1) })
                 ]],
 
                 // NOISE (all Simple) — values copied from your panels
                 [noiseFiltersAtom, [
                     // Noise Setting 1
-                    new SimpleNoiseFilter({
+                    new RidgidNoiseFilter({
                         enabled: true,
-                        strength: 0.4,
+                        strength: 0.1,
                         roughness: 2.5,
                         baseRoughness: 1.2,
                         center: new Vector3(0, 0, 0),
@@ -62,9 +59,9 @@ export default function Mars(props) {
                         useFirstLayerAsMask: false
                     }),
                     // Noise Setting 2
-                    new RidgidNoiseFilter({
+                    new SimpleNoiseFilter({
                         enabled: true,
-                        strength: 0.5,
+                        strength: 0.1,
                         roughness: 2.5,
                         baseRoughness: 0.95,
                         center: new Vector3(0, 0, 0),
@@ -76,7 +73,7 @@ export default function Mars(props) {
                     // Noise Setting 3
                     new SimpleNoiseFilter({
                         enabled: true,
-                        strength: 0.4,
+                        strength: 0.2,
                         roughness: 2.5,
                         baseRoughness: 1.2,
                         center: new Vector3(132, 379, 295),
@@ -92,7 +89,7 @@ export default function Mars(props) {
 
     // console.log(initialValues)
 
-    const marsStore = useMemo(() => {
+    const hothStore = useMemo(() => {
         const s = createStore()
         initialValues.forEach((val, atom) => s.set(atom, val))
         return s
@@ -101,7 +98,7 @@ export default function Mars(props) {
 
     return (
         <group {...props}>
-            <Provider store={marsStore}>
+            <Provider store={hothStore}>
                 <PlanetGPU showcase={true}/>
                 {/* Add glow if your scene is a bit dark: */}
                 {/* <Atmosphere /> */}

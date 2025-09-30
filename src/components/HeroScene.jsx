@@ -1,16 +1,16 @@
 import {Canvas} from '@react-three/fiber';
-import {Environment, ContactShadows, OrbitControls, Bounds} from '@react-three/drei';
+import {Environment, ContactShadows, OrbitControls} from '@react-three/drei';
 import {Suspense, useRef} from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
-import Mars from '@app/components/planets/Mars'
+import Hoth from '@app/components/planets/Hoth.jsx'
 import * as THREE from "three";
+import Mars from "@app/components/planets/Mars.jsx";
 
 // import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 // import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
-// import PlanetsGroup from "./planets/PlanetsGroup.jsx";
 
 // function CameraLogger({ controlsRef }) {
 //     const { camera, gl } = useThree(); // safe: inside <Canvas/>
@@ -71,8 +71,8 @@ export default function HeroScene() {
                         shadow-mapSize={[1024, 1024]}
                     />
 
-                    {/* Environment reflections */}
-                    {/*<Environment preset="sunset" />*/}
+                    {/* Environment lighting */}
+                    <Environment preset="dawn" environmentIntensity={0.65}/>
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}
@@ -97,8 +97,8 @@ export default function HeroScene() {
 
                             {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
-                            {/*<PlanetsGroup onPlanetClick={handlePlanetClick} />*/}
-                            <Mars position={[ -1,  2.2, -6 ]}/>
+                            <Hoth position={[ -1,  5.2, -5.2 ]}/>
+                            <Mars position={[ 1,  4.3, 4.2 ]}/>
 
                             <group ref={motorcycleRef}>
                                 <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>

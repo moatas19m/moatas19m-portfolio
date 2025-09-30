@@ -93,11 +93,11 @@ export const worldVariants: Variants = {
     },
   },
   showcase: {
-    rotateY: Math.PI * 2,
-    scale: 1,
+    rotateY: Math.PI * 1.5,
+    scale: 0.9,
     transition: {
       repeatType: "loop",
-      duration: 8,
+      duration: 60,
       type: "tween",
       ease: "linear",
       repeat: Infinity,

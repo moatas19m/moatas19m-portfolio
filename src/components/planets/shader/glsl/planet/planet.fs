@@ -100,8 +100,8 @@ void main() {
         float depthRate = inverseLerp(uMinMax.x, 1.00, elevation);
         color = findDepthColor(depthRate);
 
-        csm_Roughness = 0.0;
-        csm_Metalness = 0.4 * (2.0 - vUv.x);
+        csm_Roughness = 0.3;
+        csm_Metalness = 0.2 * (2.0 - vUv.x);
     }
 
 
