@@ -19,7 +19,7 @@ import { SimpleNoiseFilter, RidgidNoiseFilter } from '@shader/lib/noise'
 import { useMemo } from 'react'
 
 
-export default function Mars(props) {
+export default function Chromastone(props) {
     const initialValues = useMemo(
         () =>
             new Map([
@@ -42,9 +42,8 @@ export default function Mars(props) {
 
                 // DEPTH color gradient (dark teal → cyan)
                 [depthGradientAtom, [
-                    new GradientStop({ anchor: 0.05,      color: new Vector4(0.4863, 0.0000, 0.3255, 1) }), // rgb(124, 0, 83)
-                    new GradientStop({ anchor: 0.511364,  color: new Vector4(0.4863, 0.0000, 0.3098, 1) }), // rgb(124, 0, 79)
-                    new GradientStop({ anchor: 0.95,      color: new Vector4(1.0000, 0.1176, 0.6588, 1) })  // rgb(255, 30, 168)
+                    new GradientStop({ anchor: 0.45,      color: new Vector4(0.4667, 0.0000, 0.1255, 1) }),
+                    new GradientStop({ anchor: 0.95,      color: new Vector4(1.0000, 0.1490, 0.4392, 1) })  // rgb(255, 30, 168)
                 ]],
 
                 // NOISE (all Simple) — values copied from your panels
@@ -64,7 +63,7 @@ export default function Mars(props) {
                     // Noise Setting 2
                     new RidgidNoiseFilter({
                         enabled: true,
-                        strength: 0.5,
+                        strength: 0.2,
                         roughness: 2.5,
                         baseRoughness: 0.95,
                         center: new Vector3(0, 0, 0),
@@ -74,9 +73,9 @@ export default function Mars(props) {
                         useFirstLayerAsMask: true
                     }),
                     // Noise Setting 3
-                    new SimpleNoiseFilter({
+                    new RidgidNoiseFilter({
                         enabled: true,
-                        strength: 0.4,
+                        strength: 0.1,
                         roughness: 2.5,
                         baseRoughness: 1.2,
                         center: new Vector3(132, 379, 295),

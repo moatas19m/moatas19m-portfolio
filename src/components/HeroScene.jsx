@@ -6,8 +6,10 @@ import Rider from './rider/Rider.jsx';
 import GalaxyBackground from "./background/GalaxyBackground.jsx";
 import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import Hoth from '@app/components/planets/Hoth.jsx'
+import Chromastone from "@app/components/planets/Chromastone.jsx";
+import Coruscant from "@app/components/planets/Coruscant.jsx";
 import * as THREE from "three";
-import Mars from "@app/components/planets/Mars.jsx";
+import Mustafar from "@app/components/planets/Mustafar.jsx";
 
 // import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 // import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
@@ -72,7 +74,7 @@ export default function HeroScene() {
                     />
 
                     {/* Environment lighting */}
-                    <Environment preset="dawn" environmentIntensity={0.65}/>
+                    <Environment preset="sunset" environmentIntensity={0.50}/>
 
                     {/* Debug helpers */}
                     {/*<gridHelper args={[100, 100]} />*/}
@@ -97,8 +99,10 @@ export default function HeroScene() {
 
                             {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
-                            <Hoth position={[ -1,  5.2, -5.2 ]}/>
-                            <Mars position={[ 1,  4.3, 4.2 ]}/>
+                            <Hoth position={[ -1,  5.2, -6.2 ]}/>
+                            <Chromastone position={[ 1,  4.3, 4.2 ]}/>
+                            <Coruscant position={[ 1,  1.3, -4.7 ]}/>
+                            <Mustafar position={[ 1,  1.3, 4.7 ]}/>
 
                             <group ref={motorcycleRef}>
                                 <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>

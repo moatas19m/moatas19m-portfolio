@@ -233,6 +233,7 @@ const TerrainFace = ({
           baseMaterial={MeshStandardMaterial}
           {...{ wireframe }}
           side={renderBackface ? DoubleSide : FrontSide}
+          envMapIntensity={0}
         />
       </mesh>
     </>
