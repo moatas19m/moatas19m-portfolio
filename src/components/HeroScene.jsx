@@ -10,6 +10,7 @@ import Chromastone from "@app/components/planets/Chromastone.jsx";
 import Coruscant from "@app/components/planets/Coruscant.jsx";
 import * as THREE from "three";
 import Mustafar from "@app/components/planets/Mustafar.jsx";
+import StarText from "@app/sections/StarText.jsx";
 
 // import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 // import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
@@ -81,33 +82,46 @@ export default function HeroScene() {
                     {/*<axesHelper args={[5]} />*/}
 
                     {/* Models */}
-                            {/* Background galaxy */}
-                            <GalaxyBackground
-                                count={200000}
-                                size={0.01}
-                                radius={16}
-                                branches={3}
-                                spin={1.1}
-                                randomness={1}
-                                randomnessPower={3}
-                                insideColor="#ffd28a"
-                                outsideColor="#4563ff"
-                                fadeIn={0.6}
-                                rotationSpeed={0.04}
-                                // warp={warpSpeed}
-                            />
+                    {/* Background galaxy */}
+                    <GalaxyBackground
+                        count={200000}
+                        size={0.01}
+                        radius={16}
+                        branches={3}
+                        spin={1.1}
+                        randomness={1}
+                        randomnessPower={3}
+                        insideColor="#ffd28a"
+                        outsideColor="#4563ff"
+                        fadeIn={0.6}
+                        rotationSpeed={0.04}
+                        // warp={warpSpeed}
+                    />
+                    <StarText
+                        text={"Moatasim bin Hisham Sayyid\nSoftware Engineer"}
+                        fontUrl="/fonts/helvetiker_regular.typeface.json" // put file in /public/fonts
+                        particleCount={15000}
+                        particleSize={0.01}
+                        color="#CBA3FF"
+                        size={0.4}
+                        lineHeight={1.2}
+                        curveSegments={10}
+                        jitter={0}            // optional sparkle; set 0 to match your original feel
+                        position={[0, 6, -0.4]}
+                        rotation={[0, Math.PI / 2, 0]}
+                    />
 
-                            {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
+                    {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
-                            <Hoth position={[ -1,  5.2, -6.2 ]}/>
-                            <Chromastone position={[ 1,  4.3, 4.2 ]}/>
-                            <Coruscant position={[ 1,  1.3, -4.7 ]}/>
-                            <Mustafar position={[ 1,  1.3, 4.7 ]}/>
+                    <Hoth position={[ -1,  5.2, -6.2 ]}/>
+                    <Chromastone position={[ 1,  4.3, 4.2 ]}/>
+                    <Coruscant position={[ 1,  1.3, -4.7 ]}/>
+                    <Mustafar position={[ 1,  1.3, 4.7 ]}/>
 
-                            <group ref={motorcycleRef}>
-                                <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>
-                                <Rider position={[-0.5, 0, -1.6]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
-                            </group>
+                    <group ref={motorcycleRef}>
+                        <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>
+                        <Rider position={[-0.5, 0, -1.6]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
+                    </group>
 
                     {/*/!* Scroll-driven motion + camera follow; emits warpSpeed 0..1 *!/*/}
                     {/*<ScrollAnimation*/}
