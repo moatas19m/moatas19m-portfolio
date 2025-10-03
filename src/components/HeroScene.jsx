@@ -11,6 +11,7 @@ import Coruscant from "@app/components/planets/Coruscant.jsx";
 import * as THREE from "three";
 import Mustafar from "@app/components/planets/Mustafar.jsx";
 import StarText from "@app/sections/StarText.jsx";
+import { useNavigate } from 'react-router-dom'
 
 // import WarpTunnel from "./background/animations/WarpTunnel.jsx";
 // import ScrollAnimation from "./motorcycle/animations/ScrollAnimation.jsx";
@@ -30,8 +31,17 @@ import StarText from "@app/sections/StarText.jsx";
 //     return null;
 // }
 
-export default function HeroScene() {
+// small helper so we don’t repeat hover logic
+function usePointerCursor() {
+    return {
+        onPointerOver: () => (document.body.style.cursor = 'pointer'),
+        onPointerOut:  () => (document.body.style.cursor = 'auto'),
+    }
+}
 
+export default function HeroScene() {
+    const navigate = useNavigate()
+    const hover = usePointerCursor()
     const controlsRef = useRef();
     const motorcycleRef = useRef();
     // const [warpSpeed, setWarpSpeed] = useState(0);
@@ -113,14 +123,63 @@ export default function HeroScene() {
 
                     {/*<WarpTunnel speed={warpSpeed} intensity={0.6} color1="#a7d3ff" color2="#6aa8ff" noiseAmp={0.9} />*/}
 
-                    <Hoth position={[ -1,  5.2, -6.2 ]}/>
-                    <Chromastone position={[ 1,  4.3, 4.2 ]}/>
-                    <Coruscant position={[ 1,  1.3, -4.7 ]}/>
-                    <Mustafar position={[ 1,  1.3, 4.7 ]}/>
+                    {/* TRIGGERS */}
+                    {/* Work Experience → Hoth */}
+                    <group
+                        {...hover}
+                        onClick={(e) => { e.stopPropagation(); navigate('/work') }}
+                    >
+                        <Hoth position={[-1, 5.2, -6.2]} />
+                    </group>
+
+                    {/* Projects → Chromastone */}
+                    <group
+                        {...hover}
+                        onClick={(e) => { e.stopPropagation(); navigate('/projects') }}
+                    >
+                        <Chromastone position={[1, 4.3, 4.2]} />
+                    </group>
+
+                    {/* Skills/Testimonials → Coruscant */}
+                    <group
+                        {...hover}
+                        onClick={(e) => { e.stopPropagation(); navigate('/skills') }}
+                    >
+                        <Coruscant position={[1, 1.3, -4.7]} />
+                    </group>
+
+                    {/* Contact → Mustafar */}
+                    <group
+                        {...hover}
+                        onClick={(e) => { e.stopPropagation(); navigate('/contact') }}
+                    >
+                        <Mustafar position={[1, 1.3, 4.7]} />
+                    </group>
 
                     <group ref={motorcycleRef}>
-                        <Motorcycle position={[-1.2, 0.8, 0.8]} rotation={[0, Math.PI / 9, 0]}/>
-                        <Rider position={[-0.5, 0, -1.6]} rotation={[0, Math.PI / 2, 0]} scale={1.2}/>
+                        {/* About me → Rider */}
+                        <group
+                            name="RiderTrigger"
+                            {...hover}
+                            onClick={(e) => { e.stopPropagation(); navigate('/about') }}
+                            position={[-0.5, 0, -1.6]}
+                            rotation={[0, Math.PI / 2, 0]}
+                            scale={1.2}
+                        >
+                            <Rider />
+                        </group>
+
+                        {/* Hobbies & Interests → Motorcycle */}
+                        <group
+                            name="MotorcycleTrigger"
+                            {...hover}
+                            onClick={(e) => { e.stopPropagation(); navigate('/hobbies') }}
+                            position={[-1.2, 0.8, 0.8]}
+                            rotation={[0, Math.PI / 9, 0]}
+                            scale={1}
+                        >
+                            <Motorcycle />
+                        </group>
                     </group>
 
                     {/*/!* Scroll-driven motion + camera follow; emits warpSpeed 0..1 *!/*/}
