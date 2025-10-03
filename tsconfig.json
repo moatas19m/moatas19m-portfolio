@@ -18,7 +18,7 @@
       "@app/*": ["src/*"]
     },
 
-    "types": ["vite/client", "@react-three/fiber"]
+    "types": ["react", "react-dom","vite/client", "@react-three/fiber"]
   },
   "include": [
     "src",
