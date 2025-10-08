@@ -1,32 +1,30 @@
-import { Canvas } from '@react-three/fiber'
-import { Suspense } from 'react'
-import { OrbitControls, Environment } from '@react-three/drei'
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
-export default function SplitCanvasLayout({ LeftCanvasChildren, children, title }) {
+export default function SplitCanvasLayout({ children, title, leftViewId = "left-3d-view" }) {
     return (
-        <div className="fixed inset-0 flex">
-            {/* Left: 15–20% */}
-            <div className="h-full" style={{ width: '18%' }}>
-                <Canvas camera={{ position: [0, 2.5, 6], fov: 50 }}>
-                    <Suspense fallback={null}>
-                        <ambientLight intensity={0.5} />
-                        <directionalLight position={[3,5,3]} intensity={0.8} />
-                        <Environment preset="city" environmentIntensity={0.2} />
-                        <OrbitControls enablePan={false} enableZoom={false} />
-                        {LeftCanvasChildren}
-                    </Suspense>
-                </Canvas>
-            </div>
+        <div className="bg-transparent relative h-screen w-screen overflow-hidden">
+            <div className="absolute inset-0 flex">
+                {/* Left: tracked region for <View> from the global Canvas */}
+                <div
+                    id={leftViewId}
+                    className="h-full"
+                    style={{ width: "18%", pointerEvents: "none" }} // events go to the global canvas; View will route them
+                />
 
-            {/* Right: content */}
-            <div className="flex-1 overflow-y-auto bg-white/5 backdrop-blur p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-xl font-semibold">{title}</h1>
-                    <Link to="/" className="text-sm opacity-80 hover:opacity-100 underline">Back to Home</Link>
+                {/* Right: textual content */}
+                <div className="flex-1 overflow-y-auto bg-black/30 backdrop-blur-md border-l border-white/10 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h1 className="text-xl font-semibold text-white">{title}</h1>
+                        <Link
+                            to="/"
+                            className="text-sm opacity-80 hover:opacity-100 underline text-neutral-200"
+                        >
+                            Back to Home
+                        </Link>
+                    </div>
+                    {children}
                 </div>
-                {children}
             </div>
         </div>
-    )
+    );
 }

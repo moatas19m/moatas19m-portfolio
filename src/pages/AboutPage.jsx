@@ -1,23 +1,33 @@
-import SplitCanvasLayout from './layouts/SplitCanvasLayout.jsx'
-import Rider from '@app/components/rider/Rider.jsx'
+import SplitCanvasLayout from "./layouts/SplitCanvasLayout";
+import Rider from "@app/components/rider/Rider";
+import { CardSpotlight } from "@app/components/ui/card-spotlight";
 
+// DOM-only page
 export default function AboutPage() {
     return (
-        <SplitCanvasLayout
-            title="About Me"
-            LeftCanvasChildren={
-                <group position={[0, -0.3, 0]} scale={1.4}>
-                    <Rider />
-                </group>
-            }
-        >
-            <div className="max-w-2xl p-5 rounded-2xl bg-white/10">
-                <h2 className="text-lg font-semibold mb-2">Moatasim bin Hisham Sayyid</h2>
-                <p className="opacity-90">
+        <SplitCanvasLayout title="About Me">
+            <CardSpotlight className="w-full max-w-2xl mx-auto bg-black/30 backdrop-blur-md border border-white/10 p-6 rounded-2xl">
+                <h2 className="text-2xl font-bold mb-3 text-white">Moatasim bin Hisham Sayyid</h2>
+                <p className="text-neutral-300 leading-relaxed">
                     Software Engineer focused on interactive 3D, performant web stacks, and delightful UX.
-                    Add your personal summary here…
+                    I build immersive experiences that merge motion, space, and interface — where
+                    performance and design meet.
                 </p>
-            </div>
+            </CardSpotlight>
         </SplitCanvasLayout>
-    )
+    );
+}
+
+// 3D subtree for the left pane, rendered by App.jsx via <View>
+export function AboutLeft3D() {
+    return (
+        <>
+            {/* You can keep lights here or in App-level View block */}
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[3, 5, 3]} intensity={0.8} />
+            <group position={[0, -0.3, 0]} scale={1.4}>
+                <Rider />
+            </group>
+        </>
+    );
 }
