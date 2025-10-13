@@ -1,8 +1,7 @@
-import {Environment, ContactShadows, OrbitControls} from '@react-three/drei';
+import {ContactShadows, OrbitControls} from '@react-three/drei';
 import {Suspense, useRef} from 'react';
 import Motorcycle from './motorcycle/Motorcycle.jsx';
 import Rider from './rider/Rider.jsx';
-import SubtleCameraParallax from "../utils/SubtleCameraParallax.jsx";
 import Hoth from '@app/components/planets/Hoth.jsx'
 import Chromastone from "@app/components/planets/Chromastone.jsx";
 import Coruscant from "@app/components/planets/Coruscant.jsx";
@@ -66,18 +65,6 @@ export default function HeroScene() {
             />
 
             {/*<CameraLogger controlsRef={controlsRef} />*/}
-
-            {/* Lights */}
-            <hemisphereLight intensity={0.35} />
-            <directionalLight
-                position={[3, 5, 5]}
-                intensity={1.2}
-                castShadow
-                shadow-mapSize={[1024, 1024]}
-            />
-
-            {/* Environment lighting */}
-            <Environment preset="sunset" environmentIntensity={0.50} background={false}/>
 
             {/* Debug helpers */}
             {/*<gridHelper args={[100, 100]} />*/}
@@ -167,13 +154,6 @@ export default function HeroScene() {
             {/*maxSpeed={4}*/}
             {/*onSpeedChange={setWarpSpeed}*/}
             {/*/>*/}
-
-            <SubtleCameraParallax
-                strength={0.32}            // try 0.08 – 0.18
-                maxScreenDeflection={0.4}
-                rebase={10}
-                damping={10}
-            />
 
             {/* Ground contact shadows */}
             <ContactShadows
