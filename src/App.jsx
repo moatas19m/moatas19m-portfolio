@@ -1,14 +1,15 @@
 import "./index.css";
-import React, { Suspense } from "react";
+import React, {Suspense, useRef} from "react";
 import { Canvas } from "@react-three/fiber";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import GalaxyBackground from "@app/components/background/GalaxyBackground.jsx";
 import {Outlet, useLocation} from "react-router-dom";
 import HeroScene from "@app/components/HeroScene.jsx";
 import {AboutLeft3D} from "@app/pages/AboutPage.jsx";
-import {Environment} from "@react-three/drei";
+import {Environment, OrbitControls} from "@react-three/drei";
 import SubtleCameraParallax from "@app/utils/SubtleCameraParallax.jsx";
-import CameraSwitch from "@app/components/camera/CameraSwitch.jsx";
+import CameraController from "@app/components/camera/CameraController.jsx";
+import {Vector3} from "three";
 
 function SceneSwitch() {
     const { pathname } = useLocation();
@@ -31,9 +32,10 @@ export default function App() {
                 <Canvas
                     className="absolute inset-0 z-0"
                     gl={{ alpha: true, antialias: true }}
+                    camera={{ position: new Vector3(10, 1, 0), fov: 60, near: 0.5, far: 100 }}
                     onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
                 >
-                    <CameraSwitch />
+                    {/*<CameraController enableDamping dampingFactor={0.1} />*/}
 
                     <Suspense fallback={null}>
                         {/* Lights */}
@@ -63,7 +65,7 @@ export default function App() {
                         />
 
                         <SubtleCameraParallax
-                            strength={0.92}            // try 0.08 – 0.18
+                            strength={0.52}            // try 0.08 – 0.18
                             maxScreenDeflection={0.4}
                             rebase={10}
                             damping={10}

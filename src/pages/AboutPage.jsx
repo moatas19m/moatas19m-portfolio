@@ -1,5 +1,6 @@
 import Rider from "@app/components/rider/Rider";
 import { CardSpotlight } from "@app/components/ui/card-spotlight";
+import {OrbitControls} from "@react-three/drei";
 
 // DOM-only page
 export default function AboutPage() {
@@ -40,7 +41,19 @@ export function AboutLeft3D() {
             {/* You can keep lights here or in App-level View block */}
             <ambientLight intensity={0.5} />
             <directionalLight position={[3, 5, 3]} intensity={0.8} />
-            <group position={[0, 0.7, 6]} scale={1.4} rotation={[0, Math.PI/1.4, 0]}>
+            <group position={[0, -0.7, 5.5]} scale={1.4} rotation={[0, Math.PI/1.4, 0]}>
+                <OrbitControls
+                    makeDefault={true}
+                    target={[0, 0, 0]}
+                    enablePan={false}
+                    autoRotate={false}
+                    enableRotate={false}
+                    enableZoom={false}
+                    enableDamping
+                    dampingFactor={0.08}
+                    minDistance={3}
+                    maxDistance={24}
+                />
                 <Rider />
             </group>
         </>
